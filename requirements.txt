@@ -1,2 +1,2 @@
-pyunifi==2.13
+pyunifi==2.19
 paho-mqtt

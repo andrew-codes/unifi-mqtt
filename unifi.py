@@ -21,8 +21,8 @@ def get_scanner():
     """Set up the Unifi device_tracker."""
     from pyunifi.controller import Controller
 
-    ctrl = Controller(os.environ.get('UNIFI_HOST', DEFAULT_HOST), os.environ['UNIFI_USERNAME'], os.environ['UNIFI_PASSWORD'], os.environ.get('UNIFI_PORT', DEFAULT_PORT), version='v4',
-          site_id=os.environ.get('UNIFI_SITE_ID', "default"), ssl_verify=DEFAULT_VERIFY_SSL)
+    ctrl = Controller(os.environ.get('UNIFI_HOST', DEFAULT_HOST), os.environ['UNIFI_USERNAME'], os.environ['UNIFI_PASSWORD'], os.environ.get('UNIFI_PORT', DEFAULT_PORT), version='v5',
+          site_id=os.environ.get('UNIFI_SITE_ID', "default"), ssl_verify=os.environ.get('DEFAULT_VERIFY_SSL', DEFAULT_VERIFY_SSL))
 
     if os.environ.get('DETECTION_TIME', None) is None:
         detection_time = DEFAULT_DETECTION_TIME
