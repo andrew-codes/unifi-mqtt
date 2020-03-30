@@ -16,13 +16,14 @@ DEFAULT_PORT = 8443
 DEFAULT_VERIFY_SSL = False
 DEFAULT_REFRESH_TIME = 15
 DEFAULT_DETECTION_TIME = 180
+UNIFI_API_VERSION = 'v5'
 
 def get_scanner():
     """Set up the Unifi device_tracker."""
     from pyunifi.controller import Controller
 
-    ctrl = Controller(os.environ.get('UNIFI_HOST', DEFAULT_HOST), os.environ['UNIFI_USERNAME'], os.environ['UNIFI_PASSWORD'], os.environ.get('UNIFI_PORT', DEFAULT_PORT), version='v5',
-          site_id=os.environ.get('UNIFI_SITE_ID', "default"), ssl_verify=os.environ.get('DEFAULT_VERIFY_SSL', DEFAULT_VERIFY_SSL))
+    ctrl = Controller(os.environ.get('UNIFI_HOST', DEFAULT_HOST), os.environ['UNIFI_USERNAME'], os.environ['UNIFI_PASSWORD'], os.environ.get('UNIFI_PORT', DEFAULT_PORT), version=os.environ.get('UNIFI_API_VERSION', UNIFI_API_VERSION),
+          site_id=os.environ.get('UNIFI_SITE_ID', "default"), ssl_verify=DEFAULT_VERIFY_SSL)
 
     if os.environ.get('DETECTION_TIME', None) is None:
         detection_time = DEFAULT_DETECTION_TIME
@@ -50,7 +51,6 @@ class UnifiScanner:
         except APIError as ex:
             _LOGGER.error("Failed to scan clients: %s", ex)
             clients = []
-
 
         self._all_clients = {
             client['mac']: client
@@ -115,6 +115,7 @@ def on_connect(client, userdata, flags, rc):
     print("Connected to MQTT with result code "+str(rc))
 
 client = mqtt.Client()
+client.username_pw_set(os.environ.get('MQTT_USERNAME'), os.environ.get('MQTT_PASSWORD'))
 client.on_connect = on_connect
 
 if os.environ.get('MQTT_PORT', None) is None:
@@ -122,7 +123,7 @@ if os.environ.get('MQTT_PORT', None) is None:
 else:
     port = int(os.environ['MQTT_PORT'])
 
-client.connect(os.environ['MQTT_BROKER'], port, 60)
+client.connect(os.environ.get('MQTT_BROKER'), port, 60)
 
 t = Thread(target=refresh_loop, args=(client,))
 t.start()
